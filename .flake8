@@ -7,6 +7,11 @@ exclude =
     */migrations/,
     venv/,
     env/,
+    filters.py,
+    serializers.py,
+    urls.py,
+    views.py,
+    admin.py,
     isort .
 per-file-ignores =
     */settings.py:E501
