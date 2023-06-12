@@ -6,9 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.paginators import CustomPagination
+from api.paginators import LimitPageNumberPagination
 from api.serializers import CustomUserSerializer, SubscribeSerializer
-
 from .models import Subscription
 
 User = get_user_model()
@@ -17,7 +16,7 @@ User = get_user_model()
 class SubscriptionsHandlingUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = CustomPagination
+    pagination_class = LimitPageNumberPagination
 
     @action(
         detail=True,
