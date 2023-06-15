@@ -129,4 +129,4 @@ SECRET_KEY='секретный ключ Django'
 docker-compose -f docker-compose-local.yml up -d
 ```
 
-Сайт станет доступным для работы.
+Сайт станет доступным для работы!
