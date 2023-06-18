@@ -8,7 +8,9 @@ exclude =
     venv/,
     env/,
     isort,
-    I00 .
+    I001,
+    I004,
+    I005
 per-file-ignores =
     */settings.py:E501
 max-complexity = 10
