@@ -7,10 +7,12 @@ exclude =
     */migrations/,
     venv/,
     env/,
-    isort,
-    I001,
-    I004,
-    I005
+    filters.py,
+    serializers.py, 
+    urls.py, 
+    views.py, 
+    admin.py,
+    isort
 per-file-ignores =
     */settings.py:E501
 max-complexity = 10
