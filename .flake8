@@ -7,6 +7,7 @@ exclude =
     */migrations/,
     venv/,
     env/,
+    isort,
     isort .
 per-file-ignores =
     */settings.py:E501
