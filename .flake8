@@ -3,6 +3,7 @@ ignore =
     W503,
     F811,
     I
+
 exclude =
     tests/,
     */migrations/,
