@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://51.250.65.60']
+CSRF_TRUSTED_ORIGINS = ['http://158.160.60.243']
 
 ROOT_URLCONF = 'foodgram.urls'
 
