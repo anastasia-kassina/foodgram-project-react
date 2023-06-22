@@ -80,8 +80,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             sudo docker-compose down
-            sudo docker pull anastasiakassina/foodgram-frontend:latest
-            sudo docker pull anastasiakassina/foodgram-backend:latest
+            sudo docker pull anastasiakassina/foodgram_frontend:latest
+            sudo docker pull anastasiakassina/foodgram_backend:latest
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
