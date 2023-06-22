@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: buldin/foodgram-backend:latest
+    image: anastasiakassina/foodgram-backend:latest
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
@@ -22,7 +22,7 @@ services:
     container_name: foodgram-backend
 
   frontend:
-    image: buldin/foodgram-frontend
+    image: anastasiakassina/foodgram-frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
