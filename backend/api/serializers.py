@@ -124,5 +124,121 @@ class RecipeReadSerializer(ModelSerializer):
             'id',
             'name',
             'measurement_unit',
-            amount=F('ingredient')
+            'amount'
         )
+
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return user.favorites.filter(recipe=obj).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return user.shopping_cart.filter(recipe=obj).exists()
+
+
+class IngredientInRecipeWriteSerializer(ModelSerializer):
+    id = IntegerField(write_only=True)
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'amount')
+
+
+class RecipeWriteSerializer(ModelSerializer):
+    tags = PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    author = CustomUserSerializer(read_only=True)
+    ingredients = IngredientInRecipeWriteSerializer(many=True)
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        )
+
+    def validate(self, obj):
+        for field in ['name', 'text', 'cooking_time']:
+            if not obj.get(field):
+                raise serializers.ValidationError(
+                    f'{field} - Обязательное поле.'
+                )
+        if not obj.get('tags'):
+            raise serializers.ValidationError(
+                'Нужно указать минимум 1 тег.'
+            )
+        if not obj.get('ingredients'):
+            raise serializers.ValidationError(
+                'Нужно указать минимум 1 ингредиент.'
+            )
+        ingredient_id_list = [item['id'] for item in obj.get('ingredients')]
+        unique_ingredient_id_list = set(ingredient_id_list)
+        if len(ingredient_id_list) != len(unique_ingredient_id_list):
+            raise serializers.ValidationError(
+                'Ингредиенты должны быть уникальны.'
+            )
+        return obj
+
+    def validate_tags(self, value):
+        tags = value
+        if not tags:
+            raise ValidationError({
+                'tags': 'Выберите хотя бы один тег!'
+            })
+        tags_list = []
+        for tag in tags:
+            if tag in tags_list:
+                raise ValidationError({
+                    'tags': 'Теги должны быть уникальными!'
+                })
+            tags_list.append(tag)
+        return value
+
+    @transaction.atomic
+    def __create_ingredients_amounts(self, ingredients, recipe):
+        IngredientInRecipe.objects.bulk_create(
+            [IngredientInRecipe(
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
+                recipe=recipe,
+                amount=ingredient['amount']
+            ) for ingredient in ingredients]
+        )
+
+    @transaction.atomic
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.__create_ingredients_amounts(
+            recipe=recipe,
+            ingredients=ingredients
+        )
+        return recipe
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        instance = super().update(instance, validated_data)
+        instance.tags.clear()
+        instance.tags.set(tags)
+        instance.ingredients.clear()
+        self.__create_ingredients_amounts(
+            recipe=instance,
+            ingredients=ingredients
+        )
+        return instance
