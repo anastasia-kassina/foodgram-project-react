@@ -142,8 +142,7 @@ class RecipeReadSerializer(ModelSerializer):
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
     id = PrimaryKeyRelatedField(write_only=True,
-            queryset=Ingredient.objects.all()
-        )
+                                queryset=Ingredient.objects.all())
 
     class Meta:
         model = IngredientInRecipe
