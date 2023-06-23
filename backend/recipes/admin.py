@@ -6,15 +6,18 @@ from .models import (
     Recipe, ShoppingCart, Tag, TagInRecipe
 )
 
+
 @admin.register(Recipe)
 class RecipeIngredientsInLine(admin.TabularInline):
     model = Recipe.ingredients.through
     extra = 1
 
+
 @admin.register(Recipe)
 class RecipeTagsInLine(admin.TabularInline):
     model = Recipe.tags.through
     extra = 1
+
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
