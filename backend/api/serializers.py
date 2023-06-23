@@ -209,24 +209,25 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def __create_ingredients_amounts(self, ingredients, recipe):
-        IngredientInRecipe.objects.bulk_create(
-            [IngredientInRecipe(
-                ingredient=Ingredient.objects.get(id=ingredient['id']),
+        for ingredient in ingredients:
+            amount = ingredient.get('amount')
+            if int(amount) < 1:
+                raise serializers.ValidationError(
+                    'Кол-во должно быть больше 1'
+                )
+            IngredientRecipe.objects.create(
                 recipe=recipe,
-                amount=ingredient['amount']
-            ) for ingredient in ingredients]
-        )
+                ingredient_id=ingredient.get('id'),
+                amount=amount,
+            )
 
     @transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.tags.set(tags)
-        self.__create_ingredients_amounts(
-            recipe=recipe,
-            ingredients=ingredients
-        )
+        self.__create_ingredients_amounts(ingredients, recipe)
         return recipe
 
     @transaction.atomic
@@ -236,11 +237,10 @@ class RecipeWriteSerializer(ModelSerializer):
         instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
         instance.ingredients.clear()
-        self.__create_ingredients_amounts(
-            recipe=instance,
-            ingredients=ingredients
-        )
+        super().update(instance, validated_data)
+        self.__create_ingredients_amounts(ingredients, instance)
         return instance
 
     def to_representation(self, instance):
