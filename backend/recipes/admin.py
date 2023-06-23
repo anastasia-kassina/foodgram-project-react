@@ -1,10 +1,20 @@
-from django.contrib import admin
+rom django.contrib import admin
 from django.contrib.admin import display
 
 from .models import (
     Favourite, Ingredient, IngredientInRecipe,
     Recipe, ShoppingCart, Tag, TagInRecipe
 )
+
+
+class IngredientInRecipeInline(admin.TabularInline):
+    model = IngredientInRecipe
+    extra = 1
+
+
+@admin.register(IngredientInRecipe)
+class IngredientInRecipeAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient', 'amount',)
 
 
 @admin.register(Recipe)
@@ -14,10 +24,15 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags',)
     search_fields = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
+    inlines = [IngredientInRecipeInline]
 
     @display(description='Количество в избранных')
     def added_in_favorites(self, obj):
         return obj.favorites.count()
+
+@admin.register(IngredientInRecipe)
+class IngredientInRecipeAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient', 'amount',)
 
 
 @admin.register(Ingredient)
