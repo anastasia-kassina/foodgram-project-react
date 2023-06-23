@@ -12,6 +12,7 @@ class RecipeIngredientsInLine(admin.TabularInline):
     extra = 1
 
 @admin.register(Recipe)
+class RecipeTagsInLine(admin.TabularInline):
     model = Recipe.tags.through
     extra = 1
 
