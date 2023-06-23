@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import status, serializers
@@ -95,8 +96,8 @@ class TagSerializer(ModelSerializer):
 
 
 class RecipeReadSerializer(ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True, source='tag_set')
-    author = CustomUserSerializer(read_only=True)
+    tags = TagSerializer(many=True, read_only=True, source='tags')
+    author = CustomUserSerializer(read_only=True)()
     ingredients = SerializerMethodField()
     image = Base64ImageField()
     is_favorited = SerializerMethodField(read_only=True)
@@ -123,7 +124,7 @@ class RecipeReadSerializer(ModelSerializer):
             'id',
             'name',
             'measurement_unit',
-            'quantity',
+            amount=F('ingredientinrecipe__amount')
         )
 
     def get_is_favorited(self, obj):
@@ -140,7 +141,7 @@ class RecipeReadSerializer(ModelSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-    id = IntegerField(write_only=True)
+    id = PrimaryKeyRelatedField(write_only=True, queryset=Ingredient.objects.all())
 
     class Meta:
         model = IngredientInRecipe
@@ -152,8 +153,8 @@ class RecipeWriteSerializer(ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
-    author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientInRecipeWriteSerializer(many=True)
+    author = CustomUserSerializer(read_only=True)()
+    ingredients = IngredientInRecipeWriteSerializer(many=True)()
     image = Base64ImageField()
 
     class Meta:
@@ -183,9 +184,9 @@ class RecipeWriteSerializer(ModelSerializer):
             raise serializers.ValidationError(
                 'Нужно указать минимум 1 ингредиент.'
             )
-        ingredient_id_list = [item['id'] for item in obj.get('ingredients')]
-        unique_ingredient_id_list = set(ingredient_id_list)
-        if len(ingredient_id_list) != len(unique_ingredient_id_list):
+        inrgedient_id_list = [item['id'] for item in obj.get('ingredients')]
+        unique_ingredient_id_list = set(inrgedient_id_list)
+        if len(inrgedient_id_list) != len(unique_ingredient_id_list):
             raise serializers.ValidationError(
                 'Ингредиенты должны быть уникальны.'
             )
@@ -195,7 +196,7 @@ class RecipeWriteSerializer(ModelSerializer):
         tags = value
         if not tags:
             raise ValidationError({
-                'tags': 'Выберите хотя бы один тег!'
+                'tags': 'Выберете хотя бы один тег!'
             })
         tags_list = []
         for tag in tags:
@@ -242,25 +243,23 @@ class RecipeWriteSerializer(ModelSerializer):
         )
         return instance
 
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeReadSerializer(
+            instance,
+            context=context
+        ).data
+
 
 class RecipeShortSerializer(ModelSerializer):
+    image = Base64ImageField()
+
     class Meta:
         model = Recipe
         fields = (
             'id',
             'name',
             'image',
-            'cooking_time',
-        )
-
-
-class SubscriptionSerializer(ModelSerializer):
-    user = CustomUserSerializer(read_only=True)
-    author = CustomUserSerializer(read_only=True)
-
-    class Meta:
-        model = Subscription
-        fields = (
-            'user',
-            'author',
+            'cooking_time'
         )
