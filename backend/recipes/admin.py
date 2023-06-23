@@ -19,19 +19,24 @@ class RecipeAdmin(admin.ModelAdmin):
     def added_in_favorites(self, obj):
         return obj.favorites.count()
 
+
 class RecipeIngredientsInLine(admin.TabularInline):
     model = Recipe.ingredient.through
     extra = 1
 
+
 class RecipeTagsInLine(admin.TabularInline):
     model = Recipe.tags.through
     extra = 1
+
+
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit',)
     search_fields = ('name',)
     empty_value_display = '-пусто-'
     inlines = (RecipeIngredientsInLine, RecipeTagsInLine)
+
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
