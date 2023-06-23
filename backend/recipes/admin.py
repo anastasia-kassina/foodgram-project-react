@@ -1,4 +1,4 @@
-rom django.contrib import admin
+from django.contrib import admin
 from django.contrib.admin import display
 
 from .models import (
