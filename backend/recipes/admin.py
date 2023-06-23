@@ -8,25 +8,12 @@ from .models import (
 
 
 @admin.register(Recipe)
-class RecipeIngredientsInLine(admin.TabularInline):
-    model = Recipe.ingredients.through
-    extra = 1
-
-
-@admin.register(Recipe)
-class RecipeTagsInLine(admin.TabularInline):
-    model = Recipe.tags.through
-    extra = 1
-
-
-@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'id', 'author', 'added_in_favorites')
     readonly_fields = ('added_in_favorites',)
     list_filter = ('author', 'name', 'tags',)
     search_fields = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
-    inlines = (RecipeIngredientsInLine, RecipeTagsInLine)
 
     @display(description='Количество в избранных')
     def added_in_favorites(self, obj):
