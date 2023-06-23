@@ -209,17 +209,13 @@ class RecipeWriteSerializer(ModelSerializer):
 
     @transaction.atomic
     def __create_ingredients_amounts(self, ingredients, recipe):
-        for ingredient in ingredients:
-            amount = ingredient.get('amount')
-            if int(amount) < 1:
-                raise serializers.ValidationError(
-                    'Кол-во должно быть больше 1'
-                )
-            IngredientRecipe.objects.create(
+        IngredientInRecipe.objects.bulk_create(
+            [IngredientInRecipe(
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
-                ingredient_id=ingredient.get('id'),
-                amount=amount,
-            )
+                amount=ingredient['amount']
+            ) for ingredient in ingredients]
+        )
 
     @transaction.atomic
     def create(self, validated_data):
