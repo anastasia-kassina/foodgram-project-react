@@ -12,11 +12,6 @@ class IngredientInRecipeInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(IngredientInRecipe)
-class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount',)
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'id', 'author', 'added_in_favorites')
@@ -29,11 +24,6 @@ class RecipeAdmin(admin.ModelAdmin):
     @display(description='Количество в избранных')
     def added_in_favorites(self, obj):
         return obj.favorites.count()
-
-
-@admin.register(IngredientInRecipe)
-class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount',)
 
 
 @admin.register(Ingredient)
@@ -68,10 +58,10 @@ class FavouriteAdmin(admin.ModelAdmin):
 
 
 @admin.register(IngredientInRecipe)
-class IngredientInRecipe(admin.ModelAdmin):
+class IngredientInRecipeAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount',)
 
 
 @admin.register(TagInRecipe)
-class TagInRecipe(admin.ModelAdmin):
+class TagInRecipeAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'tag',)
