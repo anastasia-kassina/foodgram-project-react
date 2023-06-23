@@ -14,6 +14,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags',)
     search_fields = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
+    inlines = (IngredientInRecipe, TagInRecipe)
 
     @display(description='Количество в избранных')
     def added_in_favorites(self, obj):
