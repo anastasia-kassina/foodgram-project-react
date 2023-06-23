@@ -59,7 +59,7 @@ class FavouriteAdmin(admin.ModelAdmin):
 
 @admin.register(IngredientInRecipe)
 class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount',)
+    list_display = ('recipe', 'amount',)
 
 
 @admin.register(TagInRecipe)
