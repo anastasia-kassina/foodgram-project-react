@@ -215,7 +215,7 @@ class RecipeWriteSerializer(ModelSerializer):
                 raise serializers.ValidationError(
                     'Кол-во должно быть больше 1'
                 )
-            IngredientRecipe.objects.create(
+            IngredientInRecipe.objects.create(
                 recipe=recipe,
                 ingredient_id=ingredient.get('id'),
                 amount=amount,
@@ -225,7 +225,7 @@ class RecipeWriteSerializer(ModelSerializer):
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
+        recipe = Recipe.objects.create(tags=tags, **validated_data)
         recipe.tags.set(tags)
         self.__create_ingredients_amounts(ingredients, recipe)
         return recipe
