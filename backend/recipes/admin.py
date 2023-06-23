@@ -57,10 +57,6 @@ class FavouriteAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(IngredientInRecipe)
-class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount',)
-
 
 @admin.register(TagInRecipe)
 class TagInRecipeAdmin(admin.ModelAdmin):
