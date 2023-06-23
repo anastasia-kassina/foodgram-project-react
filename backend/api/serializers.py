@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import status, serializers
@@ -124,7 +123,7 @@ class RecipeReadSerializer(ModelSerializer):
             'id',
             'name',
             'measurement_unit',
-            'amount'
+            'quantity',
         )
 
     def get_is_favorited(self, obj):
@@ -242,3 +241,26 @@ class RecipeWriteSerializer(ModelSerializer):
             ingredients=ingredients
         )
         return instance
+
+
+class RecipeShortSerializer(ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
+
+
+class SubscriptionSerializer(ModelSerializer):
+    user = CustomUserSerializer(read_only=True)
+    author = CustomUserSerializer(read_only=True)
+
+    class Meta:
+        model = Subscription
+        fields = (
+            'user',
+            'author',
+        )
