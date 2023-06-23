@@ -1,3 +1,4 @@
+create_ingredients_amounts
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import F
@@ -208,7 +209,7 @@ class RecipeWriteSerializer(ModelSerializer):
         return value
 
     @transaction.atomic
-    def __create_ingredients_amounts(self, ingredients, recipe):
+    def create_ingredients_amounts(self, ingredients, recipe):
         IngredientInRecipe.objects.bulk_create(
             [IngredientInRecipe(
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
@@ -223,7 +224,7 @@ class RecipeWriteSerializer(ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.__create_ingredients_amounts(
+        self.create_ingredients_amounts(
             recipe=recipe,
             ingredients=ingredients
         )
@@ -237,7 +238,7 @@ class RecipeWriteSerializer(ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.__create_ingredients_amounts(
+        self.create_ingredients_amounts(
             recipe=instance,
             ingredients=ingredients
         )
