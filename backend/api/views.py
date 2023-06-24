@@ -17,7 +17,7 @@ from .paginators import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
     IngredientSerializer,
-    RecipeShortSerializer,
+    RecipeShortSerializer, RecipeWriteSerializer,
     TagSerializer
 )
 from .utils import ingredients_export
