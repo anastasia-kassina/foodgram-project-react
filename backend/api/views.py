@@ -70,7 +70,11 @@ class RecipeViewSet(ModelViewSet):
             return self.create_validated_obj(ShoppingCart, request.user, pk)
         if request.method == 'DELETE':
             return self.delete_validated_object(ShoppingCart, request.user, pk)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        recipes = shopping_cart.values_list('recipe', flat=True)
+        filtered_recipes = Recipe.objects.filter(id__in=recipes)
+        serializer = RecipeShortSerializer(filtered_recipes, many=True)
+            return Response(serializer.data)
 
     def __add_object(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
@@ -110,7 +114,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=HTTP_400_BAD_REQUEST)
 
         ingredients = IngredientInRecipe.objects.filter(
-            recipe__shopping_cart__user=user
+            recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
