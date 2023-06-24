@@ -102,7 +102,7 @@ class RecipeReadSerializer(ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
- 
+
 
     class Meta:
         model = Recipe
