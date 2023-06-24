@@ -74,7 +74,7 @@ class RecipeViewSet(ModelViewSet):
         recipes = shopping_cart.values_list('recipe', flat=True)
         filtered_recipes = Recipe.objects.filter(id__in=recipes)
         serializer = RecipeShortSerializer(filtered_recipes, many=True)
-            return Response(serializer.data)
+        return Response(serializer.data)
 
     def __add_object(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
