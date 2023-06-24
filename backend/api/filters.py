@@ -15,7 +15,6 @@ class IngredientFilter(FilterSet):
 
 
 class TagRecipeFilter(FilterSet):
-    # tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
