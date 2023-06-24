@@ -7,37 +7,38 @@ User = get_user_model()
 
 
 class IngredientFilter(FilterSet):
-    name = filters.CharFilter(lookup_expr='startswith')
+    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
         model = Ingredient
-        fields = ['name']
+        fields = ('name',)
 
 
-class RecipeFilter(FilterSet):
+class TagRecipeFilter(FilterSet):
+    # tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
-        queryset=Tag.objects.all(),
+        queryset=Tag.objects.all()
     )
-
-    is_favorited = filters.BooleanFilter(method='filter_is_favorited')
+    author = filters.ModelChoiceFilter(queryset=User.objects.all())
+    is_favorited = filters.BooleanFilter(method='filter_is_favorite')
     is_in_shopping_cart = filters.BooleanFilter(
-        method='filter_is_in_shopping_cart'
+        method='filter_is_in_shopping_cart',
     )
 
     class Meta:
         model = Recipe
         fields = ('tags', 'author',)
 
-    def filter_is_favorited(self, queryset, name, value):
+    def filter_is_favorite(self, queryset, name, value):
         user = self.request.user
-        if value and not user.is_anonymous:
+        if value and not self.request.user.is_anonymous:
             return queryset.filter(favorites__user=user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user
-        if value and not user.is_anonymous:
+        if value and not self.request.user.is_anonymous:
             return queryset.filter(shopping_cart__user=user)
         return queryset
