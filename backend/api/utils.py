@@ -3,7 +3,9 @@ from datetime import datetime
 from django.shortcuts import HttpResponse
 
 
-def format_shopping_list(user, ingredients):
+def ingredients_export(self, request, ingredients):
+    user = request.user
+    filename = f'{user.username}_shopping_list.txt'
     today = datetime.today()
     shopping_list = (
         f'Список покупок для: {user.get_full_name()}\n\n'
@@ -16,13 +18,6 @@ def format_shopping_list(user, ingredients):
         for ingredient in ingredients
     ])
     shopping_list += f'\n\nFoodgram ({today:%Y})'
-    return shopping_list
-
-
-def ingredients_export(self, request, ingredients):
-    user = request.user
-    filename = f'{user.username}_shopping_list.txt'
-    shopping_list = format_shopping_list(user, ingredients)
     response = HttpResponse(shopping_list, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
