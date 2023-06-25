@@ -104,6 +104,10 @@ class RecipeViewSet(ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated]
+    )
     def download_shopping_cart(self, request):
         user = request.user
         if not user.shopping_cart.exists():
